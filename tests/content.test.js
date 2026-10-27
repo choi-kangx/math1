@@ -18,18 +18,24 @@ for (const id of manifest.steps) {
   });
 }
 
-// Every scene image, including the ones hints reuse, must exist and be an SVG.
+test('manifest lists every lesson once and is not empty', () => {
+  assert.ok(manifest.steps.length >= 5);
+  assert.equal(new Set(manifest.steps).size, manifest.steps.length);
+  for (const id of ['count-groups', 'carry-addition']) assert.ok(manifest.steps.includes(id));
+});
+
+// 모든 장면은 그림 파일이나 그림 글자 중 하나를 가진다. 그림 파일은 실제로 있어야 한다.
 for (const id of manifest.steps) {
-  test(`step "${id}" scene images exist as SVG files`, () => {
+  test(`step "${id}" scene pictures exist`, () => {
     const step = readStep(id);
     const byId = new Map(step.scenes.map((s) => [s.id, s]));
-    const images = new Set(step.scenes.map((s) => s.image));
     for (const p of step.practice ?? []) {
-      const scene = byId.get(p.hintScene);
-      assert.ok(scene, `${id}/${p.id}: hintScene "${p.hintScene}" not found`);
-      images.add(scene.image);
+      assert.ok(byId.get(p.hintScene), `${id}/${p.id}: hintScene "${p.hintScene}" not found`);
     }
-    assert.ok(images.size > 0, `${id}: no images to check`);
+    for (const s of step.scenes) {
+      assert.ok(s.image || s.visual, `${id}/${s.id}: needs image or visual`);
+    }
+    const images = new Set(step.scenes.filter((s) => s.image).map((s) => s.image));
     for (const image of images) {
       let svg;
       try {

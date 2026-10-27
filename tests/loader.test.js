@@ -35,7 +35,7 @@ test('loadStep throws on a step that fails validation', async () => {
 test('loadStep returns a valid step', async () => {
   const step = {
     id: 'ok', grade: 1, title: 't', principle: 'p',
-    scenes: [{ id: 's1', choices: ['a', 'b'], answer: 0 }],
+    scenes: [{ id: 's1', image: 'a.svg', choices: ['a', 'b'], answer: 0 }],
     practice: [{ id: 'p1', choices: ['1', '2'], answer: 0, hintScene: 's1' }],
   };
   const calls = stubFetch({ ok: true, json: async () => step });

@@ -8,8 +8,8 @@ const makeStep = () => ({
   title: '더하기',
   principle: '합치면 늘어난다',
   scenes: [
-    { id: 's1', choices: ['a', 'b'], answer: 0 },
-    { id: 's2', choices: ['a', 'b'], answer: 1 },
+    { id: 's1', image: 'a.svg', choices: ['a', 'b'], answer: 0 },
+    { id: 's2', visual: '🍎', choices: ['a', 'b'], answer: 1 },
   ],
   practice: [
     { id: 'p1', choices: ['1', '2', '3'], answer: 1, hintScene: 's1' },
@@ -50,7 +50,7 @@ test('duplicate scene id is an error', () => {
 test('missing fields and bad grade are errors', () => {
   assert.ok(validateStep({}).length > 0);
   const s = makeStep();
-  s.grade = 4;
+  s.grade = 7;
   assert.ok(validateStep(s).length > 0);
 });
 
@@ -81,4 +81,16 @@ test('scene without choices array is reported', () => {
 
 test('valid scenes pass', () => {
   assert.deepEqual(validateStep(makeStep()), []);
+});
+
+test('a scene without image or visual is an error', () => {
+  const s = makeStep();
+  delete s.scenes[0].image;
+  assert.ok(validateStep(s).some((e) => e.includes('s1') && e.includes('image or visual')));
+});
+
+test('grades 4 to 6 are allowed for later expansion', () => {
+  const s = makeStep();
+  s.grade = 6;
+  assert.deepEqual(validateStep(s), []);
 });

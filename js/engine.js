@@ -5,7 +5,7 @@ export function validateStep(step) {
   if (!step || typeof step !== 'object') return ['step must be an object'];
 
   if (!isNonEmptyString(step.id)) errors.push('id is required');
-  if (![1, 2, 3].includes(step.grade)) errors.push('grade must be 1, 2 or 3');
+  if (![1, 2, 3, 4, 5, 6].includes(step.grade)) errors.push('grade must be 1 to 6');
   if (!isNonEmptyString(step.title)) errors.push('title is required');
   if (!isNonEmptyString(step.principle)) errors.push('principle is required');
   if (!Array.isArray(step.scenes)) errors.push('scenes is required');
@@ -17,6 +17,10 @@ export function validateStep(step) {
       const id = scene && scene.id;
       if (sceneIds.has(id)) errors.push(`duplicate scene id: ${id}`);
       sceneIds.add(id);
+
+      if (!isNonEmptyString(scene && scene.image) && !isNonEmptyString(scene && scene.visual)) {
+        errors.push(`scene ${id}: image or visual is required`);
+      }
 
       const choices = scene && scene.choices;
       const answer = scene && scene.answer;
