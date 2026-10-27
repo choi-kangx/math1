@@ -1,0 +1,134 @@
+{
+  "id": "factors",
+  "grade": 5,
+  "area": "수와 연산",
+  "title": "약수와 배수",
+  "principle": "어떤 수를 나누어떨어지게 하는 수가 약수이고, 어떤 수를 1배, 2배, 3배 한 수가 배수이다.",
+  "scenes": [
+    {
+      "id": "scene-1",
+      "art": {
+        "bg": "room",
+        "cast": [
+          {
+            "who": "owl",
+            "side": "left",
+            "mood": "think"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "choco",
+            "n": 12,
+            "holder": "box",
+            "cols": 6
+          }
+        ]
+      },
+      "dialogue": "초콜릿 12조각을 남김없이 똑같이 나누어 담을 상자를 고르려고 해.",
+      "question": "12조각을 남김없이 똑같이 나눌 수 없는 사람 수는?",
+      "choices": [
+        "4명",
+        "5명",
+        "6명"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "scene-2",
+      "art": {
+        "bg": "class",
+        "groups": [
+          {
+            "tokens": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "6",
+              "12"
+            ]
+          }
+        ]
+      },
+      "dialogue": "12를 나누어떨어지게 하는 수를 모두 모았어. 이런 수를 12의 약수라고 해.",
+      "question": "18의 약수가 아닌 것은?",
+      "choices": [
+        "9",
+        "6",
+        "4"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "scene-3",
+      "art": {
+        "bg": "park",
+        "groups": [
+          {
+            "vehicle": "bus",
+            "label": "4분마다"
+          },
+          {
+            "vehicle": "tram",
+            "label": "6분마다"
+          }
+        ]
+      },
+      "dialogue": "버스는 4분마다, 전차는 6분마다 와. 지금 둘이 함께 출발했어! 4의 배수와 6의 배수를 차례로 써 보자.",
+      "question": "두 차가 처음으로 다시 함께 출발하는 것은 몇 분 뒤일까?",
+      "choices": [
+        "24분 뒤",
+        "10분 뒤",
+        "12분 뒤"
+      ],
+      "answer": 2
+    }
+  ],
+  "practice": [
+    {
+      "id": "p-1",
+      "prompt": "20의 약수는 모두 몇 개일까요?",
+      "choices": [
+        "6개",
+        "5개",
+        "4개"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-2",
+      "prompt": "7의 배수가 아닌 것은?",
+      "choices": [
+        "21",
+        "35",
+        "27"
+      ],
+      "answer": 2,
+      "hintScene": "scene-3"
+    },
+    {
+      "id": "p-3",
+      "prompt": "연필 24자루와 공책 18권을 남김없이 똑같이 나눠 줄 수 있는 가장 많은 사람 수는?",
+      "choices": [
+        "3명",
+        "6명",
+        "12명"
+      ],
+      "answer": 1,
+      "hintScene": "scene-1"
+    },
+    {
+      "id": "p-4",
+      "prompt": "6과 8의 최소공배수는?",
+      "choices": [
+        "24",
+        "48",
+        "14"
+      ],
+      "answer": 0,
+      "hintScene": "scene-3"
+    }
+  ]
+}

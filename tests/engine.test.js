@@ -94,3 +94,25 @@ test('grades 4 to 6 are allowed for later expansion', () => {
   s.grade = 6;
   assert.deepEqual(validateStep(s), []);
 });
+
+import { validateArt } from '../js/engine.js';
+
+test('validateArt accepts a well-formed scene and rejects unknown parts', () => {
+  const good = {
+    bg: 'room', cast: [{ who: 'owl', side: 'left' }],
+    groups: [{ obj: 'apple', n: 3, holder: 'plate' }, { sep: '+' }, { stack: [{ obj: 'marble', n: 10, holder: 'string' }] },
+      { people: 3, each: 2, obj: 'donut' }, { pizza: 8, filled: 3 }, { tokens: ['1'] }, { vehicle: 'bus' }],
+  };
+  assert.deepEqual(validateArt(good), []);
+  assert.ok(validateArt({ groups: [{ obj: 'dragon', n: 1 }] }).some((e) => e.includes('dragon')));
+  assert.ok(validateArt({ groups: [{ obj: 'apple', n: 1, holder: 'tray' }] }).some((e) => e.includes('tray')));
+  assert.ok(validateArt({ groups: [{ pizza: 4, filled: 3, filled2: 2 }] }).some((e) => e.includes('exceed')));
+  assert.ok(validateArt({ bg: 'moon', groups: [{ sep: '+' }] }).some((e) => e.includes('moon')));
+  assert.ok(validateArt({ groups: [] }).length > 0);
+});
+
+test('a scene with invalid art fails step validation', () => {
+  const s = makeStep();
+  s.scenes[0].art = { groups: [{ obj: 'dragon', n: 1 }] };
+  assert.ok(validateStep(s).some((e) => e.includes('s1') && e.includes('dragon')));
+});

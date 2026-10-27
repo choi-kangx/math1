@@ -2,26 +2,20 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6d5efc">
   <title>수학 놀이터</title>
-  <meta name="description" content="초등 1~3학년이 만화와 게임으로 수학 원리를 익히는 놀이터">
+  <meta name="description" content="초등 1~6학년이 만화와 게임으로 수학 원리를 익히는 놀이터">
   <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/file-guard.js"></script>
 </head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="#missions">🧮 수학 놀이터</a>
-    <div class="stats"><span id="stat-streak"></span><span id="stat-coins"></span></div>
-  </header>
-  <nav class="tabs" aria-label="메뉴">
-    <a class="tab" href="#missions" data-view="missions"><span>🎯</span>오늘</a>
-    <a class="tab" href="#learn" data-view="learn"><span>📖</span>배우기</a>
-    <a class="tab" href="#play" data-view="play"><span>🎮</span>게임</a>
-    <a class="tab" href="#stickers" data-view="stickers"><span>⭐</span>스티커</a>
-    <a class="tab" href="#settings" data-view="settings"><span>⚙️</span>설정</a>
-  </nav>
+<body class="has-nav">
+  <header id="topbar" class="topbar"></header>
+  <nav id="tabs" class="tabs" aria-label="메뉴"></nav>
   <main class="page">
-    <div id="view" aria-live="polite">불러오는 중...</div>
+    <div id="view" aria-live="polite"></div>
   </main>
   <script type="module" src="js/index.js"></script>
 </body>

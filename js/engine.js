@@ -18,7 +18,10 @@ export function validateStep(step) {
       if (sceneIds.has(id)) errors.push(`duplicate scene id: ${id}`);
       sceneIds.add(id);
 
-      if (!isNonEmptyString(scene && scene.image) && !isNonEmptyString(scene && scene.visual)) {
+      const art = scene && scene.art;
+      if (art !== undefined) {
+        for (const e of validateArt(art)) errors.push(`scene ${id}: ${e}`);
+      } else if (!isNonEmptyString(scene && scene.image) && !isNonEmptyString(scene && scene.visual)) {
         errors.push(`scene ${id}: image or visual is required`);
       }
 
@@ -56,6 +59,49 @@ export function validateStep(step) {
     }
   }
 
+  return errors;
+}
+
+// 만화 장면 데이터(art)의 모양을 검사한다. 그리는 쪽은 js/comic.js.
+export const ART_OBJECTS = ['marble', 'candy', 'cookie', 'strawberry', 'apple', 'donut', 'ladybug', 'choco'];
+export const ART_HOLDERS = ['plate', 'basket', 'bowl', 'box', 'leaf', 'string', 'scatter', 'none'];
+const ART_BGS = ['room', 'park', 'class'];
+const ART_WHO = ['owl', 'girl', 'boy', 'kid', 'kid2'];
+
+function validateGroup(g, path, errors) {
+  if (!g || typeof g !== 'object') { errors.push(`${path}: group must be an object`); return; }
+  if (g.sep !== undefined) return;
+  if (g.stack || g.row) {
+    const list = g.stack || g.row;
+    if (!Array.isArray(list) || list.length === 0) errors.push(`${path}: stack/row must be a non-empty array`);
+    else list.forEach((c, i) => validateGroup(c, `${path}.${i}`, errors));
+    return;
+  }
+  if (g.people !== undefined) {
+    if (!Number.isInteger(g.people) || g.people < 1) errors.push(`${path}: people must be a positive integer`);
+    if (g.each && !ART_OBJECTS.includes(g.obj)) errors.push(`${path}: unknown obj ${g.obj}`);
+    return;
+  }
+  if (g.pizza !== undefined || g.bar !== undefined) {
+    const n = g.pizza ?? g.bar;
+    if (!Number.isInteger(n) || n < 2) errors.push(`${path}: pizza/bar needs 2 or more parts`);
+    if ((g.filled || 0) + (g.filled2 || 0) > n) errors.push(`${path}: filled parts exceed total`);
+    return;
+  }
+  if (g.tokens !== undefined) { if (!Array.isArray(g.tokens)) errors.push(`${path}: tokens must be an array`); return; }
+  if (g.vehicle !== undefined) { if (!['bus', 'tram'].includes(g.vehicle)) errors.push(`${path}: unknown vehicle`); return; }
+  if (!ART_OBJECTS.includes(g.obj)) errors.push(`${path}: unknown obj ${g.obj}`);
+  if (g.holder !== undefined && !ART_HOLDERS.includes(g.holder)) errors.push(`${path}: unknown holder ${g.holder}`);
+  if (!Number.isInteger(g.n) || g.n < 0) errors.push(`${path}: n must be a non-negative integer`);
+}
+
+export function validateArt(art) {
+  const errors = [];
+  if (!art || typeof art !== 'object') return ['art must be an object'];
+  if (art.bg !== undefined && !ART_BGS.includes(art.bg)) errors.push(`unknown bg ${art.bg}`);
+  for (const c of art.cast || []) if (!ART_WHO.includes(c.who)) errors.push(`unknown cast ${c.who}`);
+  if (!Array.isArray(art.groups) || art.groups.length === 0) errors.push('art.groups must be a non-empty array');
+  else art.groups.forEach((g, i) => validateGroup(g, `groups.${i}`, errors));
   return errors;
 }
 

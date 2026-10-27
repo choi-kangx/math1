@@ -1,0 +1,136 @@
+{
+  "id": "frac-add",
+  "grade": 4,
+  "area": "수와 연산",
+  "title": "분모가 같은 분수의 덧셈",
+  "principle": "분모가 같은 분수는 같은 크기의 조각이므로 분모는 그대로 두고 분자끼리 더한다.",
+  "scenes": [
+    {
+      "id": "scene-1",
+      "art": {
+        "bg": "room",
+        "cast": [
+          {
+            "who": "girl",
+            "side": "left",
+            "mood": "happy"
+          },
+          {
+            "who": "boy",
+            "side": "right",
+            "mood": "happy"
+          }
+        ],
+        "groups": [
+          {
+            "pizza": 8,
+            "filled": 3,
+            "filled2": 2
+          }
+        ]
+      },
+      "dialogue": "피자 한 판을 똑같이 8조각으로 잘랐어. 내가 3조각, 동생이 2조각을 먹었어.",
+      "question": "둘이 먹은 피자는 모두 몇 조각일까?",
+      "choices": [
+        "5조각",
+        "10조각",
+        "16조각"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "scene-2",
+      "art": {
+        "bg": "room",
+        "cast": [
+          {
+            "who": "owl",
+            "side": "left",
+            "mood": "think"
+          }
+        ],
+        "groups": [
+          {
+            "pizza": 8,
+            "filled": 5
+          }
+        ]
+      },
+      "dialogue": "조각의 크기는 그대로 8분의 1이야. 조각을 합쳐도 피자를 다시 자른 건 아니지!",
+      "question": "8분의 3 + 8분의 2는 얼마일까?",
+      "choices": [
+        "16분의 5",
+        "8분의 5",
+        "8분의 6"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "scene-3",
+      "art": {
+        "bg": "class",
+        "groups": [
+          {
+            "bar": 10,
+            "filled": 4,
+            "filled2": 3
+          }
+        ]
+      },
+      "dialogue": "어떤 친구는 분모끼리도 더해서 20분의 7이라고 했어. 그런데 20분의 7은 10분의 7보다 훨씬 작은 수야.",
+      "question": "10분의 4 + 10분의 3을 바르게 계산한 것은?",
+      "choices": [
+        "20분의 7",
+        "10분의 12",
+        "10분의 7"
+      ],
+      "answer": 2
+    }
+  ],
+  "practice": [
+    {
+      "id": "p-1",
+      "prompt": "5분의 1 + 5분의 3 = ?",
+      "choices": [
+        "5분의 4",
+        "10분의 4",
+        "5분의 3"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-2",
+      "prompt": "케이크를 12조각으로 나눠 아빠가 5조각, 엄마가 4조각 먹었어요. 먹은 양은 전체의 얼마일까요?",
+      "choices": [
+        "24분의 9",
+        "12분의 9",
+        "12분의 20"
+      ],
+      "answer": 1,
+      "hintScene": "scene-1"
+    },
+    {
+      "id": "p-3",
+      "prompt": "9분의 2 + 9분의 5 = ?",
+      "choices": [
+        "18분의 7",
+        "9분의 10",
+        "9분의 7"
+      ],
+      "answer": 2,
+      "hintScene": "scene-3"
+    },
+    {
+      "id": "p-4",
+      "prompt": "7분의 6 - 7분의 2 = ?",
+      "choices": [
+        "7분의 4",
+        "0분의 4",
+        "14분의 4"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    }
+  ]
+}

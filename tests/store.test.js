@@ -51,7 +51,7 @@ test('blocked storage falls back to memory without throwing', () => {
 test('corrupt or hostile data is normalized', () => {
   const s = normalize({
     coins: -5, stars: { a: 9, b: 2 }, stickers: ['x', 3], streak: { last: 1 },
-    settings: { sound: 'yes', speech: true, grade: 9, name: 'a'.repeat(50) },
+    settings: { sound: 'yes', speech: true, grade: 7, name: 'a'.repeat(50) },
   });
   assert.equal(s.coins, 0);
   assert.deepEqual(s.stars, { b: 2 });

@@ -1,0 +1,141 @@
+{
+  "id": "remainder",
+  "grade": 3,
+  "area": "수와 연산",
+  "title": "나머지가 있는 나눗셈",
+  "principle": "똑같이 나누고 남는 수가 나머지이며, 나머지는 항상 나누는 수보다 작다.",
+  "scenes": [
+    {
+      "id": "scene-1",
+      "art": {
+        "bg": "room",
+        "groups": [
+          {
+            "obj": "donut",
+            "n": 14,
+            "holder": "box",
+            "cols": 7
+          },
+          {
+            "sep": "→"
+          },
+          {
+            "people": 3
+          }
+        ]
+      },
+      "dialogue": "도넛 14개를 친구 3명에게 똑같이 나눠 주려고 해. 한 명에게 하나씩 차례로 나눠 줘 볼까?",
+      "question": "한 명이 도넛을 몇 개씩 받을 수 있을까?",
+      "choices": [
+        "5개",
+        "4개",
+        "3개"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "scene-2",
+      "art": {
+        "bg": "room",
+        "groups": [
+          {
+            "people": 3,
+            "each": 4,
+            "obj": "donut"
+          },
+          {
+            "obj": "donut",
+            "n": 2,
+            "holder": "plate",
+            "cols": 2,
+            "label": "남은 도넛"
+          }
+        ]
+      },
+      "dialogue": "모두 똑같이 받고 나니 접시에 도넛이 남았어. 더 나눠 주면 똑같지 않게 돼.",
+      "question": "똑같이 나누고 남은 도넛은 몇 개일까?",
+      "choices": [
+        "1개",
+        "3개",
+        "2개"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "scene-3",
+      "art": {
+        "bg": "room",
+        "groups": [
+          {
+            "obj": "donut",
+            "n": 3,
+            "holder": "plate",
+            "cols": 3,
+            "label": "만약 3개라면"
+          },
+          {
+            "sep": "→"
+          },
+          {
+            "people": 3,
+            "mood": "wow"
+          }
+        ]
+      },
+      "dialogue": "만약 남은 도넛이 3개였다면 어떻게 됐을까? 세 친구에게 하나씩 더 줄 수 있었겠지!",
+      "question": "3명에게 나눌 때, 나머지가 될 수 없는 수는 어느 것일까?",
+      "choices": [
+        "3",
+        "1",
+        "2"
+      ],
+      "answer": 0
+    }
+  ],
+  "practice": [
+    {
+      "id": "p-1",
+      "prompt": "17 ÷ 5의 몫과 나머지는?",
+      "choices": [
+        "몫 3, 나머지 2",
+        "몫 2, 나머지 7",
+        "몫 3, 나머지 1"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-2",
+      "prompt": "사탕 23개를 4명이 똑같이 나누면 한 명이 몇 개씩 받고 몇 개가 남을까요?",
+      "choices": [
+        "5개씩, 4개 남음",
+        "5개씩, 3개 남음",
+        "6개씩, 1개 남음"
+      ],
+      "answer": 1,
+      "hintScene": "scene-1"
+    },
+    {
+      "id": "p-3",
+      "prompt": "□ ÷ 6의 나머지가 될 수 없는 수는?",
+      "choices": [
+        "5",
+        "0",
+        "6"
+      ],
+      "answer": 2,
+      "hintScene": "scene-3"
+    },
+    {
+      "id": "p-4",
+      "prompt": "학생 30명이 한 줄에 7명씩 서면, 줄을 다 채우고 몇 명이 남을까요?",
+      "choices": [
+        "2명",
+        "4명",
+        "3명"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    }
+  ]
+}

@@ -31,7 +31,7 @@ export function normalize(raw) {
     if (typeof r.sound === 'boolean') s.settings.sound = r.sound;
     if (typeof r.speech === 'boolean') s.settings.speech = r.speech;
     if (typeof r.name === 'string') s.settings.name = r.name.slice(0, 20);
-    if ([1, 2, 3].includes(r.grade)) s.settings.grade = r.grade;
+    if ([1, 2, 3, 4, 5, 6].includes(r.grade)) s.settings.grade = r.grade;
   }
   return s;
 }

@@ -4,10 +4,13 @@ import { loadSolved, saveSolved } from './progress.js';
 import { loadState, updateState } from './store.js';
 import { lessonStars, coinsFor, recordResult, dayString } from './rewards.js';
 import { play, speak } from './sound.js';
-import { el, button, link, starsText, renderStats } from './ui.js';
+import { renderArt, owlAvatar } from './comic.js';
+import { icon, starRow } from './icons.js';
+import { el, button, link, renderStats, mountChrome } from './ui.js';
 
 const root = document.getElementById('step-root');
 const LOCK_MS = 450;
+const LETTERS = ['A', 'B', 'C', 'D'];
 
 let step = null;
 let saved = [];     // 저장된 푼 문제 (목록의 완료 표시용)
@@ -24,54 +27,66 @@ function lockFor(fn) {
   }, LOCK_MS);
 }
 
-function sceneBlock(scene) {
-  const wrap = el('div', 'scene');
-  if (scene.image) {
-    const img = el('img', 'scene-img');
+function panel(scene) {
+  const wrap = el('figure', 'comic');
+  if (scene.art) wrap.appendChild(renderArt(scene.art));
+  else if (scene.image) {
+    const img = el('img', 'comic-img');
     img.src = scene.image;
     img.alt = '';
     wrap.appendChild(img);
   } else {
-    const v = el('div', 'scene-visual', scene.visual);
+    const v = el('div', 'comic-text', scene.visual);
     v.setAttribute('aria-hidden', 'true');
     wrap.appendChild(v);
   }
-  wrap.appendChild(el('p', 'dialogue', scene.dialogue));
   return wrap;
+}
+
+function bubble(text) {
+  const b = el('div', 'bubble');
+  const avatar = el('span', 'avatar');
+  avatar.appendChild(owlAvatar());
+  b.append(avatar, el('p', 'bubble-text', text));
+  return b;
 }
 
 function questionRow(text, readFirst) {
   const row = el('div', 'question-row');
-  const speakBtn = button('speak-btn', '🔊', () => speak(readFirst ? `${readFirst} ${text}` : text));
+  const full = readFirst ? `${readFirst} ${text}` : text;
+  const speakBtn = button('icon-btn', undefined, () => speak(full));
   speakBtn.setAttribute('aria-label', '읽어 주기');
+  speakBtn.appendChild(icon('volume', 20));
   row.append(el('p', 'question', text), speakBtn);
-  if (settings.speech) speak(readFirst ? `${readFirst} ${text}` : text);
+  if (settings.speech) speak(full);
   return row;
 }
 
 function choiceList(choices, onPick) {
-  const list = el('div', 'choices');
+  const list = el('div', 'answer-list');
   choices.forEach((text, i) => {
-    list.appendChild(button('choice', text, (e) => {
+    const b = button('answer', undefined, (e) => {
       if (locked) return;
       onPick(i, e.currentTarget);
-    }));
+    });
+    b.append(el('span', 'answer-key', LETTERS[i]), el('span', 'answer-text', text));
+    list.appendChild(b);
   });
   return list;
 }
 
 function showError() {
   root.textContent = '';
-  root.append(el('p', 'list-error', '단계를 불러오지 못했어요'), link('back-link', '목록으로 돌아가기', 'index.html#learn'));
+  root.append(el('p', 'notice error', '단계를 불러오지 못했어요'), link('btn', '목록으로 돌아가기', 'index.html#learn'));
 }
 
-function progressBar(label, done, total) {
-  const wrap = el('div', 'drill-bar');
+function steps(label, done, total) {
+  const wrap = el('div', 'play-bar');
   const meter = el('div', 'meter');
   const fill = el('div', 'meter-fill');
   fill.style.width = `${(done / total) * 100}%`;
   meter.appendChild(fill);
-  wrap.append(el('span', 'drill-count', label), meter);
+  wrap.append(el('span', 'play-count', label), meter);
   return wrap;
 }
 
@@ -81,13 +96,15 @@ function renderScene(i) {
   const msg = el('p', 'feedback');
   msg.setAttribute('role', 'status');
   root.append(
-    progressBar(`이야기 ${i + 1} / ${step.scenes.length}`, i, step.scenes.length),
-    sceneBlock(scene),
+    steps(`이야기 ${i + 1}/${step.scenes.length}`, i, step.scenes.length),
+    panel(scene),
+    bubble(scene.dialogue),
     questionRow(scene.question, scene.dialogue),
     choiceList(scene.choices, (idx, b) => {
       if (!checkChoice(scene, idx)) {
         play('wrong', settings.sound);
         b.classList.add('wrong');
+        b.disabled = true;
         msg.textContent = '다시 생각해 보자';
         msg.className = 'feedback wrong';
         return;
@@ -116,9 +133,11 @@ function renderPractice(item) {
   const total = step.practice.length;
   const msg = el('p', 'feedback');
   msg.setAttribute('role', 'status');
+  const card = el('div', 'problem-card');
+  card.append(el('span', 'chip chip-primary', '확인 문제'), questionRow(item.prompt));
   root.append(
-    progressBar(`문제 ${step.practice.indexOf(item) + 1} / ${total}`, runSolved.length, total),
-    questionRow(item.prompt),
+    steps(`문제 ${step.practice.indexOf(item) + 1}/${total}`, runSolved.length, total),
+    card,
     choiceList(item.choices, (idx, b) => {
       if (!checkChoice(item, idx)) {
         mistakes++;
@@ -144,12 +163,15 @@ function renderPractice(item) {
 function renderHint(item) {
   const scene = step.scenes.find((s) => s.id === item.hintScene);
   root.textContent = '';
-  const retry = button('choice primary', '다시 풀어 보기', () => {
+  const retry = button('btn btn-primary', undefined, () => {
     if (locked) return;
     renderPractice(item);
   });
-  root.append(el('p', 'feedback wrong', '다시 생각해 보자. 이 장면을 다시 봐요.'));
-  if (scene) root.appendChild(sceneBlock(scene));
+  retry.append(icon('retry', 18), el('span', null, '다시 풀어 보기'));
+  const head = el('p', 'notice');
+  head.append(icon('bulb', 18), el('span', null, '힌트: 이 장면을 다시 떠올려 봐요'));
+  root.appendChild(head);
+  if (scene) root.append(panel(scene), bubble(scene.dialogue));
   root.appendChild(retry);
   locked = true;
   setTimeout(() => { locked = false; }, 300);
@@ -174,17 +196,24 @@ async function renderDone() {
 
   root.textContent = '';
   const card = el('div', 'result-card');
+  const principle = el('div', 'principle');
+  principle.append(icon('bulb', 20), el('p', null, step.principle));
   card.append(
-    el('div', 'result-stars', starsText(stars)),
-    el('h1', null, '잘했어요!'),
-    el('p', 'lead', `"${step.title}" 단계를 모두 마쳤어요.`),
-    el('p', 'principle-box', `💡 ${step.principle}`),
-    el('p', 'reward', `🪙 +${coins}`)
+    starRow(stars, 3, 44),
+    el('h1', 'result-title', '레슨 완료!'),
+    el('p', 'result-sub', `${step.title} · 코인 +${coins}`),
+    principle
   );
   const actions = el('div', 'actions');
   const nextId = await nextLessonId();
-  if (nextId) actions.appendChild(link('choice primary', '다음 단계로 →', `step.html?id=${encodeURIComponent(nextId)}`));
-  actions.append(button('choice', '다시 하기', start), link('choice', '목록으로', 'index.html#learn'));
+  if (nextId) {
+    const n = link('btn btn-primary', undefined, `step.html?id=${encodeURIComponent(nextId)}`);
+    n.append(el('span', null, '다음 레슨'), icon('next', 18));
+    actions.appendChild(n);
+  }
+  const again = button(nextId ? 'btn' : 'btn btn-primary', undefined, start);
+  again.append(icon('retry', 18), el('span', null, '다시 하기'));
+  actions.append(again, link('btn btn-ghost', '레슨 목록', 'index.html#learn'));
   card.appendChild(actions);
   root.appendChild(card);
 }
@@ -197,6 +226,7 @@ function start() {
 }
 
 async function init() {
+  mountChrome({ back: 'index.html#learn', title: '배우기' });
   renderStats(loadState());
   const id = new URLSearchParams(location.search).get('id');
   try {
@@ -204,8 +234,8 @@ async function init() {
     step = await loadStep(id);
     saved = loadSolved(step.id);
     document.title = `수학 놀이터 - ${step.title}`;
-    const t = document.getElementById('step-title');
-    if (t) t.textContent = `📖 ${step.title}`;
+    const t = document.querySelector('.topbar-title');
+    if (t) t.textContent = step.title;
     start();
   } catch (e) {
     console.error(e);

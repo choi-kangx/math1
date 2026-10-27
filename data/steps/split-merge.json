@@ -7,33 +7,192 @@
   "scenes": [
     {
       "id": "scene-1",
-      "visual": "🍬🍬🍬🍬🍬🍬🍬",
+      "art": {
+        "bg": "room",
+        "title": "사탕 7개",
+        "cast": [
+          {
+            "who": "owl",
+            "side": "left",
+            "mood": "think"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "candy",
+            "n": 5,
+            "holder": "plate",
+            "cols": 3
+          },
+          {
+            "obj": "candy",
+            "n": 0,
+            "holder": "plate",
+            "cols": 3
+          }
+        ]
+      },
       "dialogue": "사탕 7개를 접시 두 개에 나눠 담으려고 해. 첫 번째 접시에 5개를 담았어.",
       "question": "두 번째 접시에는 사탕을 몇 개 담을 수 있을까?",
-      "choices": ["1개", "2개", "3개"],
+      "choices": [
+        "1개",
+        "2개",
+        "3개"
+      ],
       "answer": 1
     },
     {
       "id": "scene-2",
-      "visual": "🍬🍬🍬🍬 🍽️ 🍬🍬🍬",
+      "art": {
+        "bg": "room",
+        "cast": [
+          {
+            "who": "owl",
+            "side": "left",
+            "mood": "happy"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "candy",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          },
+          {
+            "sep": "+"
+          },
+          {
+            "obj": "candy",
+            "n": 3,
+            "holder": "plate",
+            "cols": 2
+          },
+          {
+            "sep": "→"
+          },
+          {
+            "obj": "candy",
+            "n": 0,
+            "holder": "plate",
+            "cols": 3
+          }
+        ]
+      },
       "dialogue": "이번에는 4개와 3개로 나눠 담았어. 이걸 다시 한 접시에 모아 볼까?",
       "question": "4개와 3개를 모으면 모두 몇 개일까?",
-      "choices": ["6개", "8개", "7개"],
+      "choices": [
+        "6개",
+        "8개",
+        "7개"
+      ],
       "answer": 2
     },
     {
       "id": "scene-3",
-      "visual": "🍬🍬 🍬🍬🍬🍬🍬 · 🍬🍬🍬🍬🍬🍬 🍬",
+      "art": {
+        "bg": "room",
+        "title": "7을 가르는 방법",
+        "cast": [
+          {
+            "who": "owl",
+            "side": "left",
+            "mood": "think"
+          }
+        ],
+        "groups": [
+          {
+            "stack": [
+              {
+                "row": [
+                  {
+                    "obj": "candy",
+                    "n": 2,
+                    "holder": "plate",
+                    "cols": 2
+                  },
+                  {
+                    "obj": "candy",
+                    "n": 5,
+                    "holder": "plate",
+                    "cols": 5
+                  }
+                ]
+              },
+              {
+                "row": [
+                  {
+                    "obj": "candy",
+                    "n": 6,
+                    "holder": "plate",
+                    "cols": 6
+                  },
+                  {
+                    "obj": "candy",
+                    "n": 1,
+                    "holder": "plate",
+                    "cols": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
       "dialogue": "7개는 여러 가지 방법으로 나눌 수 있네. 그런데 하나는 이상해!",
       "question": "7을 가른 것이 아닌 것은 어느 것일까?",
-      "choices": ["3과 3", "2와 5", "6과 1"],
+      "choices": [
+        "3과 3",
+        "2와 5",
+        "6과 1"
+      ],
       "answer": 0
     }
   ],
   "practice": [
-    { "id": "p-1", "prompt": "6은 2와 몇으로 가를 수 있을까요?", "choices": ["3", "4", "5"], "answer": 1, "hintScene": "scene-1" },
-    { "id": "p-2", "prompt": "3과 5를 모으면 얼마일까요?", "choices": ["8", "7", "9"], "answer": 0, "hintScene": "scene-2" },
-    { "id": "p-3", "prompt": "9를 바르게 가른 것은 어느 것일까요?", "choices": ["4와 4", "5와 5", "4와 5"], "answer": 2, "hintScene": "scene-3" },
-    { "id": "p-4", "prompt": "10은 7과 몇으로 가를 수 있을까요?", "choices": ["2", "3", "4"], "answer": 1, "hintScene": "scene-1" }
+    {
+      "id": "p-1",
+      "prompt": "6은 2와 몇으로 가를 수 있을까요?",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": 1,
+      "hintScene": "scene-1"
+    },
+    {
+      "id": "p-2",
+      "prompt": "3과 5를 모으면 얼마일까요?",
+      "choices": [
+        "8",
+        "7",
+        "9"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-3",
+      "prompt": "9를 바르게 가른 것은 어느 것일까요?",
+      "choices": [
+        "4와 4",
+        "5와 5",
+        "4와 5"
+      ],
+      "answer": 2,
+      "hintScene": "scene-3"
+    },
+    {
+      "id": "p-4",
+      "prompt": "10은 7과 몇으로 가를 수 있을까요?",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": 1,
+      "hintScene": "scene-1"
+    }
   ]
 }

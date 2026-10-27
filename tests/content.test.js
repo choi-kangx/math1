@@ -33,7 +33,7 @@ for (const id of manifest.steps) {
       assert.ok(byId.get(p.hintScene), `${id}/${p.id}: hintScene "${p.hintScene}" not found`);
     }
     for (const s of step.scenes) {
-      assert.ok(s.image || s.visual, `${id}/${s.id}: needs image or visual`);
+      assert.ok(s.art, `${id}/${s.id}: every lesson scene should be drawn with art`);
     }
     const images = new Set(step.scenes.filter((s) => s.image).map((s) => s.image));
     for (const image of images) {

@@ -7,34 +7,156 @@
   "scenes": [
     {
       "id": "scene-1",
-      "image": "assets/carry-addition/scene-1.svg",
+      "art": {
+        "bg": "park",
+        "title": "바구니에는 10개가 들어가요",
+        "cast": [
+          {
+            "who": "boy",
+            "side": "left",
+            "mood": "think"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "apple",
+            "n": 9,
+            "holder": "basket",
+            "cols": 5
+          },
+          {
+            "obj": "apple",
+            "n": 5,
+            "holder": "plate",
+            "cols": 3
+          }
+        ]
+      },
       "dialogue": "바구니에 사과가 9개 있어. 사과 5개를 더 담으려고 해. 바구니에는 10개까지 담을 수 있대!",
       "question": "사과 9개가 든 바구니를 가득 채우려면 몇 개가 더 필요할까?",
-      "choices": ["1개", "2개", "5개"],
+      "choices": [
+        "1개",
+        "2개",
+        "5개"
+      ],
       "answer": 0
     },
     {
       "id": "scene-2",
-      "image": "assets/carry-addition/scene-2.svg",
+      "art": {
+        "bg": "park",
+        "cast": [
+          {
+            "who": "boy",
+            "side": "left",
+            "mood": "happy"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "apple",
+            "n": 9,
+            "holder": "basket",
+            "cols": 5
+          },
+          {
+            "sep": "←"
+          },
+          {
+            "obj": "apple",
+            "n": 1,
+            "holder": "none"
+          },
+          {
+            "obj": "apple",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          }
+        ]
+      },
       "dialogue": "더 담을 사과 5개 중에서 바구니를 채울 사과를 먼저 꺼내 볼게. 나머지는 옆에 둘 거야.",
       "question": "5개를 바구니를 채울 1개와 나머지로 나누면, 나머지는 몇 개일까?",
-      "choices": ["3개", "4개", "5개"],
+      "choices": [
+        "3개",
+        "4개",
+        "5개"
+      ],
       "answer": 1
     },
     {
       "id": "scene-3",
-      "image": "assets/carry-addition/scene-3.svg",
+      "art": {
+        "bg": "park",
+        "cast": [
+          {
+            "who": "boy",
+            "side": "left",
+            "mood": "wow"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "apple",
+            "n": 10,
+            "holder": "basket",
+            "cols": 5
+          },
+          {
+            "obj": "apple",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          }
+        ]
+      },
       "dialogue": "와, 바구니가 가득 찼어! 바구니 밖에는 사과가 몇 개 남아 있어.",
       "question": "가득 찬 바구니의 사과 10개와 남은 사과 4개를 합치면 모두 몇 개일까?",
-      "choices": ["13개", "15개", "14개"],
+      "choices": [
+        "13개",
+        "15개",
+        "14개"
+      ],
       "answer": 2
     },
     {
       "id": "scene-4",
-      "image": "assets/carry-addition/scene-4.svg",
+      "art": {
+        "bg": "park",
+        "cast": [
+          {
+            "who": "boy",
+            "side": "left",
+            "mood": "think"
+          },
+          {
+            "who": "owl",
+            "side": "right",
+            "mood": "happy"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "apple",
+            "n": 10,
+            "holder": "basket",
+            "cols": 5
+          },
+          {
+            "obj": "apple",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          }
+        ]
+      },
       "dialogue": "우리는 바구니를 먼저 가득 채우고, 남은 사과를 더해 봤지. 그런데 처음 식과 같은 걸까?",
       "question": "9 + 5와 값이 같은 식은 어느 것일까?",
-      "choices": ["9 + 4", "10 + 4", "10 + 5"],
+      "choices": [
+        "9 + 4",
+        "10 + 4",
+        "10 + 5"
+      ],
       "answer": 1
     }
   ],
@@ -42,35 +164,55 @@
     {
       "id": "p-1",
       "prompt": "귤이 9개 있고 3개를 더 받았어요. 모두 몇 개일까요?",
-      "choices": ["12개", "13개", "11개"],
+      "choices": [
+        "12개",
+        "13개",
+        "11개"
+      ],
       "answer": 0,
       "hintScene": "scene-2"
     },
     {
       "id": "p-2",
       "prompt": "8 + 5를 계산해 보세요. 8에 2를 더해 10을 만들면 쉬워요.",
-      "choices": ["14", "12", "13"],
+      "choices": [
+        "14",
+        "12",
+        "13"
+      ],
       "answer": 2,
       "hintScene": "scene-3"
     },
     {
       "id": "p-3",
       "prompt": "7 + 6에서 7을 10으로 만들려면 6을 어떻게 나누면 좋을까요?",
-      "choices": ["2와 4", "3과 3", "4와 2"],
+      "choices": [
+        "2와 4",
+        "3과 3",
+        "4와 2"
+      ],
       "answer": 1,
       "hintScene": "scene-2"
     },
     {
       "id": "p-4",
       "prompt": "구슬이 6개 있고 8개를 더 얻었어요. 모두 몇 개일까요?",
-      "choices": ["14개", "13개", "15개"],
+      "choices": [
+        "14개",
+        "13개",
+        "15개"
+      ],
       "answer": 0,
       "hintScene": "scene-3"
     },
     {
       "id": "p-5",
       "prompt": "빵이 9개 있고 9개가 더 생겼어요. 10을 만들어 계산하면 모두 몇 개일까요?",
-      "choices": ["17개", "19개", "18개"],
+      "choices": [
+        "17개",
+        "19개",
+        "18개"
+      ],
       "answer": 2,
       "hintScene": "scene-4"
     }

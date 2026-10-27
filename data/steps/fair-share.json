@@ -7,33 +7,139 @@
   "scenes": [
     {
       "id": "scene-1",
-      "visual": "🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓 → 👧 👦 👧",
+      "art": {
+        "bg": "room",
+        "groups": [
+          {
+            "obj": "strawberry",
+            "n": 12,
+            "holder": "bowl",
+            "cols": 6
+          },
+          {
+            "sep": "→"
+          },
+          {
+            "people": 3
+          }
+        ]
+      },
       "dialogue": "딸기 12개를 친구 3명이 똑같이 나눠 먹으려고 해. 한 명에게 하나씩 차례로 나눠 주자!",
       "question": "한 사람에게 하나씩 나눠 주면 몇 바퀴를 돌아야 딸기가 다 없어질까?",
-      "choices": ["3바퀴", "4바퀴", "12바퀴"],
+      "choices": [
+        "3바퀴",
+        "4바퀴",
+        "12바퀴"
+      ],
       "answer": 1
     },
     {
       "id": "scene-2",
-      "visual": "👧 🍓🍓🍓🍓   👦 🍓🍓🍓🍓   👧 🍓🍓🍓🍓",
+      "art": {
+        "bg": "room",
+        "groups": [
+          {
+            "people": 3,
+            "each": 4,
+            "obj": "strawberry"
+          }
+        ]
+      },
       "dialogue": "다 나눠 주고 나니 세 친구가 똑같은 수만큼 받았어. 이걸 식으로 써 볼까?",
       "question": "이 장면을 바르게 나타낸 식은 어느 것일까?",
-      "choices": ["12 - 3 = 9", "12 ÷ 3 = 4", "3 × 12 = 36"],
+      "choices": [
+        "12 - 3 = 9",
+        "12 ÷ 3 = 4",
+        "3 × 12 = 36"
+      ],
       "answer": 1
     },
     {
       "id": "scene-3",
-      "visual": "🍓🍓🍓🍓 🍽️ 🍓🍓🍓🍓 🍽️ 🍓🍓🍓🍓 🍽️",
+      "art": {
+        "bg": "room",
+        "cast": [
+          {
+            "who": "owl",
+            "side": "left",
+            "mood": "think"
+          }
+        ],
+        "groups": [
+          {
+            "obj": "strawberry",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          },
+          {
+            "obj": "strawberry",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          },
+          {
+            "obj": "strawberry",
+            "n": 4,
+            "holder": "plate",
+            "cols": 2
+          }
+        ]
+      },
       "dialogue": "이번에는 딸기 12개를 한 접시에 4개씩 담아 볼게.",
       "question": "4개씩 담으면 접시는 몇 개가 필요할까?",
-      "choices": ["4개", "2개", "3개"],
+      "choices": [
+        "4개",
+        "2개",
+        "3개"
+      ],
       "answer": 2
     }
   ],
   "practice": [
-    { "id": "p-1", "prompt": "사탕 10개를 2명이 똑같이 나누면 한 명이 몇 개를 가질까요?", "choices": ["5개", "8개", "12개"], "answer": 0, "hintScene": "scene-2" },
-    { "id": "p-2", "prompt": "15 ÷ 3 = ?", "choices": ["3", "5", "12"], "answer": 1, "hintScene": "scene-1" },
-    { "id": "p-3", "prompt": "공 8개를 한 상자에 2개씩 담으면 상자는 몇 개일까요?", "choices": ["6개", "10개", "4개"], "answer": 2, "hintScene": "scene-3" },
-    { "id": "p-4", "prompt": "20 ÷ 4 = ?", "choices": ["5", "16", "24"], "answer": 0, "hintScene": "scene-2" }
+    {
+      "id": "p-1",
+      "prompt": "사탕 10개를 2명이 똑같이 나누면 한 명이 몇 개를 가질까요?",
+      "choices": [
+        "5개",
+        "8개",
+        "12개"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-2",
+      "prompt": "15 ÷ 3 = ?",
+      "choices": [
+        "3",
+        "5",
+        "12"
+      ],
+      "answer": 1,
+      "hintScene": "scene-1"
+    },
+    {
+      "id": "p-3",
+      "prompt": "공 8개를 한 상자에 2개씩 담으면 상자는 몇 개일까요?",
+      "choices": [
+        "6개",
+        "10개",
+        "4개"
+      ],
+      "answer": 2,
+      "hintScene": "scene-3"
+    },
+    {
+      "id": "p-4",
+      "prompt": "20 ÷ 4 = ?",
+      "choices": [
+        "5",
+        "16",
+        "24"
+      ],
+      "answer": 0,
+      "hintScene": "scene-2"
+    }
   ]
 }

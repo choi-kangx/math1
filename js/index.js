@@ -1,17 +1,27 @@
 import { loadManifest, loadStep } from './loader.js';
 import { loadSolved } from './progress.js';
 import { isStepComplete } from './engine.js';
-import { DRILLS, findDrill } from './generators.js';
+import { DRILLS, findDrill, recommendedLevel } from './generators.js';
 import { loadState, updateState, resetAll } from './store.js';
 import {
   dayString, dailyMissions, missionsDone, buySticker, currentStreak, MISSION_BONUS,
 } from './rewards.js';
 import { STICKERS } from './stickers.js';
 import { play, speak } from './sound.js';
-import { el, button, link, starsText, renderStats } from './ui.js';
+import { renderArt } from './comic.js';
+import { icon, starRow } from './icons.js';
+import { el, button, link, gameTile, renderStats, mountChrome } from './ui.js';
 
 const viewRoot = document.getElementById('view');
+const TABS = [
+  { view: 'missions', icon: 'home', label: '홈' },
+  { view: 'learn', icon: 'book', label: '배우기' },
+  { view: 'play', icon: 'game', label: '게임' },
+  { view: 'stickers', icon: 'award', label: '컬렉션' },
+  { view: 'settings', icon: 'sliders', label: '설정' },
+];
 const VIEWS = { missions, learn, play: games, stickers, settings };
+let gameFilter = null;
 
 // 레슨 목록은 한 번만 읽는다. 한 파일이 깨져도 나머지 레슨은 보여 준다.
 let lessonsPromise = null;
@@ -30,37 +40,109 @@ function loadLessons() {
   return lessonsPromise;
 }
 
+function header(title, sub) {
+  const h = el('div', 'view-head');
+  h.appendChild(el('h1', 'view-title', title));
+  if (sub) h.appendChild(el('p', 'view-sub', sub));
+  return h;
+}
+
 function section(title, sub) {
   const s = el('section', 'section');
-  s.appendChild(el('h2', 'section-title', title));
-  if (sub) s.appendChild(el('p', 'section-sub', sub));
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', 'section-title', title));
+  if (sub) head.appendChild(el('p', 'section-sub', sub));
+  s.appendChild(head);
   return s;
 }
 
-function drillCard(drill, state, extra) {
-  const a = link('card drill-card', undefined, `drill.html?id=${encodeURIComponent(drill.id)}`);
-  const stars = state.stars[`drill:${drill.id}`] || 0;
-  a.append(
-    el('span', 'card-icon', drill.icon),
-    el('span', 'card-title', drill.title),
-    el('span', 'card-meta', `${drill.grade}학년 · ${drill.area}`),
-    el('span', stars ? 'card-stars' : 'card-stars empty', starsText(stars))
+function chip(text, cls = '') {
+  return el('span', `chip ${cls}`.trim(), text);
+}
+
+function levelStars(state, drill, level) {
+  return state.stars[`drill:${drill.id}:L${level}`] ?? (level === 1 ? state.stars[`drill:${drill.id}`] || 0 : 0);
+}
+
+function levelDots(state, drill) {
+  const dots = el('span', 'level-dots');
+  drill.levels.forEach((_, i) => {
+    const n = levelStars(state, drill, i + 1);
+    const d = el('span', `dot s${n}`);
+    d.title = `Lv.${i + 1} 별 ${n}개`;
+    dots.appendChild(d);
+  });
+  return dots;
+}
+
+function gameCard(drill, state) {
+  const a = link('game-card', undefined, `drill.html?id=${encodeURIComponent(drill.id)}`);
+  const body = el('span', 'game-body');
+  body.append(
+    el('span', 'game-title', drill.title),
+    el('span', 'game-meta', `${drill.grade}학년 · ${drill.area}`),
+    levelDots(state, drill)
   );
-  if (extra) a.appendChild(extra);
+  a.append(gameTile(drill), body);
   return a;
 }
 
+function missionRow(drill, state, done) {
+  const a = link(done ? 'row-card done' : 'row-card', undefined, `drill.html?id=${encodeURIComponent(drill.id)}`);
+  const rec = recommendedLevel(drill, state.settings.grade);
+  const body = el('span', 'row-body');
+  body.append(el('span', 'row-title', drill.title), el('span', 'row-meta', `추천 Lv.${rec} · ${drill.levels[rec - 1]}`));
+  const status = done ? el('span', 'status done') : el('span', 'status');
+  if (done) status.append(icon('check', 16), el('span', null, '완료'));
+  else status.append(icon('coin', 16), el('span', null, `+${MISSION_BONUS}`));
+  a.append(gameTile(drill, 'sm'), body, status);
+  return a;
+}
+
+function lessonThumb(step) {
+  const t = el('span', 'thumb');
+  const first = step.scenes[0];
+  if (first.art) t.appendChild(renderArt(first.art));
+  else if (first.image) {
+    const img = el('img');
+    img.src = first.image;
+    img.alt = '';
+    t.appendChild(img);
+  } else t.appendChild(el('span', 'thumb-text', first.visual));
+  return t;
+}
+
 function lessonCard(step, state) {
-  const a = link('card lesson-card', undefined, `step.html?id=${encodeURIComponent(step.id)}`);
+  const a = link('lesson-card', undefined, `step.html?id=${encodeURIComponent(step.id)}`);
   const stars = state.stars[`lesson:${step.id}`] || 0;
   const done = isStepComplete(step, loadSolved(step.id));
-  a.append(
-    el('span', 'card-meta', `${step.grade}학년 · ${step.area || '수학'}`),
-    el('span', 'card-title', step.title),
-    el('span', 'card-desc', step.principle),
-    el('span', stars ? 'card-stars' : 'card-stars empty', done || stars ? starsText(stars) : '아직 안 했어요')
-  );
+  const body = el('span', 'lesson-body');
+  const top = el('span', 'lesson-top');
+  top.append(chip(`${step.grade}학년`), done || stars ? starRow(stars) : chip('새 레슨', 'chip-new'));
+  body.append(top, el('span', 'lesson-title', step.title), el('span', 'lesson-desc', step.principle));
+  a.append(lessonThumb(step), body);
   return a;
+}
+
+function ring(done, total) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 84 84');
+  svg.setAttribute('class', 'ring');
+  const c = 2 * Math.PI * 34;
+  for (const [cls, len] of [['ring-bg', c], ['ring-fg', (c * done) / total]]) {
+    const circle = document.createElementNS(NS, 'circle');
+    circle.setAttribute('cx', 42); circle.setAttribute('cy', 42); circle.setAttribute('r', 34);
+    circle.setAttribute('class', cls);
+    circle.setAttribute('stroke-dasharray', `${len} ${c}`);
+    svg.appendChild(circle);
+  }
+  const t = document.createElementNS(NS, 'text');
+  t.setAttribute('x', 42); t.setAttribute('y', 49); t.setAttribute('text-anchor', 'middle');
+  t.setAttribute('class', 'ring-text');
+  t.textContent = `${done}/${total}`;
+  svg.appendChild(t);
+  return svg;
 }
 
 async function missions(state, view) {
@@ -69,35 +151,35 @@ async function missions(state, view) {
   const ids = dailyMissions(today, DRILLS, grade);
   const done = missionsDone(state, today);
   const name = state.settings.name || '친구';
-
-  const hello = el('div', 'hello');
-  hello.append(el('div', 'mascot', '🦉'), el('div', 'hello-text', `안녕, ${name}! 오늘도 수학 놀이 해 볼까?`));
-  view.appendChild(hello);
-
-  const s = section('🎯 오늘의 미션', `${grade}학년 미션 · 별을 1개 이상 받으면 완료, 미션마다 🪙 ${MISSION_BONUS} 보너스`);
-  const meter = el('div', 'meter big');
-  const fill = el('div', 'meter-fill');
-  fill.style.width = `${(done.length / ids.length) * 100}%`;
-  meter.appendChild(fill);
-  s.append(meter, el('p', 'section-sub', `${done.length} / ${ids.length} 완료${done.length >= ids.length ? ' 🎉 오늘 미션 끝!' : ''}`));
-  const grid = el('div', 'card-grid');
-  ids.forEach((id) => {
-    const isDone = done.includes(id);
-    grid.appendChild(drillCard(findDrill(id), state, el('span', isDone ? 'badge done' : 'badge', isDone ? '✓ 완료' : `🪙 +${MISSION_BONUS}`)));
-  });
-  s.appendChild(grid);
-  view.appendChild(s);
-
   const streak = currentStreak(state.streak, today);
-  view.appendChild(section('🔥 연속 학습', streak > 0 ? `${streak}일째 공부하고 있어요!` : '오늘 첫 게임이나 레슨을 마치면 연속 학습이 시작돼요.'));
+
+  const hero = el('section', 'hero');
+  const text = el('div', 'hero-text');
+  text.append(
+    el('p', 'hero-kicker', `${grade}학년 · 연속 학습 ${streak}일`),
+    el('h1', 'hero-title', `${name}, 오늘도 한 걸음!`),
+    el('p', 'hero-sub', done.length >= ids.length ? '오늘의 미션을 모두 끝냈어요. 멋져요!' : '미션 3개를 끝내고 보너스 코인을 받아요.')
+  );
+  const ringBox = el('div', 'hero-ring');
+  ringBox.append(ring(Math.min(done.length, ids.length), ids.length), el('span', 'ring-label', '오늘의 미션'));
+  hero.append(text, ringBox);
+  view.appendChild(hero);
+
+  const s = section('오늘의 미션', `별 1개 이상이면 완료 · 미션마다 코인 ${MISSION_BONUS}개`);
+  const list = el('div', 'row-list');
+  ids.forEach((id) => list.appendChild(missionRow(findDrill(id), state, done.includes(id))));
+  s.appendChild(list);
+  view.appendChild(s);
 
   try {
     const { lessons } = await loadLessons();
     const notDone = (l) => !isStepComplete(l, loadSolved(l.id));
     const next = lessons.find((l) => l.grade === grade && notDone(l)) || lessons.find(notDone);
     if (next) {
-      const ls = section('📖 이어서 배우기', '만화로 원리를 알아봐요');
-      ls.appendChild(lessonCard(next, state));
+      const ls = section('이어서 배우기', '만화 속 질문에 답하며 원리를 찾아봐요');
+      const grid = el('div', 'lesson-grid single');
+      grid.appendChild(lessonCard(next, state));
+      ls.appendChild(grid);
       view.appendChild(ls);
     }
   } catch (e) {
@@ -106,51 +188,62 @@ async function missions(state, view) {
 }
 
 async function learn(state, view) {
-  const s = section('📖 만화로 배우기', '이야기 속 질문에 답하며 원리를 스스로 찾아봐요');
-  view.appendChild(s);
+  view.appendChild(header('배우기', '이야기 속 질문에 답하며 수학 원리를 스스로 찾아봐요'));
   try {
     const { lessons, failed } = await loadLessons();
     if (lessons.length === 0) throw new Error('no lessons');
     for (const grade of [1, 2, 3, 4, 5, 6]) {
       const list = lessons.filter((l) => l.grade === grade);
       if (list.length === 0) continue;
-      const g = el('div', 'grade-group');
-      g.appendChild(el('h3', 'grade-title', `${grade}학년`));
-      const grid = el('div', 'card-grid');
+      const s = section(`${grade}학년`);
+      const grid = el('div', 'lesson-grid');
       list.forEach((l) => grid.appendChild(lessonCard(l, state)));
-      g.appendChild(grid);
-      s.appendChild(g);
+      s.appendChild(grid);
+      view.appendChild(s);
     }
-    if (failed) s.appendChild(el('p', 'list-error small', '일부 단계를 불러오지 못했어요'));
+    if (failed) view.appendChild(el('p', 'notice error', '일부 레슨을 불러오지 못했어요'));
   } catch (e) {
     console.error(e);
-    s.appendChild(el('p', 'list-error', '단계 목록을 불러오지 못했어요'));
+    view.appendChild(el('p', 'notice error', '단계 목록을 불러오지 못했어요'));
   }
 }
 
 function games(state, view) {
-  const s = section('🎮 연습 게임', '10문제씩! 처음에 맞힐수록 별을 많이 받아요');
-  const mine = state.settings.grade;
-  for (const grade of [mine, ...[1, 2, 3].filter((g) => g !== mine)]) {
-    const g = el('div', 'grade-group');
-    g.appendChild(el('h3', 'grade-title', `${grade}학년${grade === mine ? ' (내 학년)' : ''}`));
-    const grid = el('div', 'card-grid');
-    DRILLS.filter((d) => d.grade === grade).forEach((d) => grid.appendChild(drillCard(d, state)));
-    g.appendChild(grid);
-    s.appendChild(g);
-  }
-  view.appendChild(s);
+  view.appendChild(header('연습 게임', `게임 ${DRILLS.length}종 · 단계마다 별을 모아 보세요`));
+  const grades = [...new Set(DRILLS.map((d) => d.grade))].sort();
+  if (gameFilter === null) gameFilter = grades.includes(state.settings.grade) ? state.settings.grade : 0;
+  const bar = el('div', 'filter-bar');
+  bar.setAttribute('role', 'tablist');
+  [0, ...grades].forEach((g) => {
+    const b = button(g === gameFilter ? 'filter on' : 'filter', g === 0 ? '전체' : `${g}학년`, () => { gameFilter = g; render(); });
+    b.setAttribute('aria-pressed', String(g === gameFilter));
+    bar.appendChild(b);
+  });
+  view.appendChild(bar);
+  const grid = el('div', 'game-grid');
+  DRILLS.filter((d) => gameFilter === 0 || d.grade === gameFilter).forEach((d) => grid.appendChild(gameCard(d, state)));
+  view.appendChild(grid);
 }
 
 function stickers(state, view) {
-  const s = section('⭐ 스티커북', `${state.stickers.length} / ${STICKERS.length}개 모았어요 · 게임으로 코인을 모아 스티커를 사요`);
-  const grid = el('div', 'sticker-grid');
+  const owned = state.stickers.length;
+  view.appendChild(header('컬렉션', `${owned} / ${STICKERS.length} 모음 · 게임과 레슨으로 코인을 모아요`));
+  const meter = el('div', 'meter');
+  const fill = el('div', 'meter-fill');
+  fill.style.width = `${(owned / STICKERS.length) * 100}%`;
+  meter.appendChild(fill);
+  view.appendChild(meter);
+
+  const grid = el('div', 'collect-grid');
   STICKERS.forEach((st) => {
     const has = state.stickers.includes(st.id);
-    const cell = el('div', has ? 'sticker owned' : 'sticker');
-    cell.append(el('span', 'sticker-emoji', has ? st.emoji : '❔'), el('span', 'sticker-name', has ? st.name : '???'));
+    const cell = el('div', has ? 'collect owned' : 'collect');
+    const badge = el('span', 'collect-badge');
+    if (has) badge.textContent = st.emoji;
+    else badge.appendChild(icon('lock', 22));
+    cell.append(badge, el('span', 'collect-name', has ? st.name : '???'));
     if (!has) {
-      const b = button(state.coins < st.price ? 'buy-btn poor' : 'buy-btn', `🪙 ${st.price}`, () => {
+      const b = button(state.coins < st.price ? 'buy-btn poor' : 'buy-btn', undefined, () => {
         let result;
         const next = updateState((cur) => {
           result = buySticker(cur, st);
@@ -161,70 +254,89 @@ function stickers(state, view) {
           render();
         } else {
           play('wrong', next.settings.sound);
-          b.textContent = '코인이 부족해요';
-          setTimeout(() => { b.textContent = `🪙 ${st.price}`; }, 1200);
+          b.lastChild.textContent = '코인 부족';
+          setTimeout(() => { b.lastChild.textContent = String(st.price); }, 1200);
         }
       });
+      b.append(icon('coin', 14), el('span', null, String(st.price)));
       cell.appendChild(b);
     }
     grid.appendChild(cell);
   });
-  s.appendChild(grid);
-  view.appendChild(s);
+  view.appendChild(grid);
 }
 
 function settings(state, view) {
-  const s = section('⚙️ 설정');
+  view.appendChild(header('설정'));
   const save = (patch) => updateState((cur) => ({ ...cur, settings: { ...cur.settings, ...patch } }));
+  const card = el('div', 'settings-card');
 
-  const nameRow = el('label', 'setting');
-  nameRow.appendChild(el('span', 'setting-label', '이름'));
+  const row = (label, control) => {
+    const r = el('div', 'setting');
+    r.append(el('span', 'setting-label', label), control);
+    card.appendChild(r);
+  };
+
   const name = el('input', 'text-input');
   name.type = 'text';
   name.maxLength = 20;
   name.value = state.settings.name;
-  name.placeholder = '이름을 적어 주세요';
+  name.placeholder = '이름';
+  name.setAttribute('aria-label', '이름');
   name.addEventListener('change', () => save({ name: name.value.trim() }));
-  nameRow.appendChild(name);
-  s.appendChild(nameRow);
+  row('이름', name);
 
-  const gradeRow = el('div', 'setting');
-  gradeRow.appendChild(el('span', 'setting-label', '학년'));
   const seg = el('div', 'segmented');
-  [1, 2, 3].forEach((g) => {
-    seg.appendChild(button(g === state.settings.grade ? 'seg on' : 'seg', `${g}학년`, () => { save({ grade: g }); render(); }));
+  [1, 2, 3, 4, 5, 6].forEach((g) => {
+    seg.appendChild(button(g === state.settings.grade ? 'seg on' : 'seg', String(g), () => { save({ grade: g }); gameFilter = null; render(); }));
   });
-  gradeRow.appendChild(seg);
-  s.appendChild(gradeRow);
+  row('학년', seg);
 
   const toggle = (label, key, after) => {
-    const row = el('div', 'setting');
-    row.appendChild(el('span', 'setting-label', label));
     const on = state.settings[key];
-    const b = button(on ? 'toggle on' : 'toggle', on ? '켜짐' : '꺼짐', () => {
+    const sw = button(on ? 'switch on' : 'switch', undefined, () => {
       const next = save({ [key]: !on });
       if (after) after(next);
       render();
     });
-    b.setAttribute('aria-pressed', String(on));
-    row.appendChild(b);
-    s.appendChild(row);
+    sw.setAttribute('role', 'switch');
+    sw.setAttribute('aria-checked', String(on));
+    sw.setAttribute('aria-label', label);
+    sw.appendChild(el('span', 'knob'));
+    row(label, sw);
   };
   toggle('효과음', 'sound', (next) => play('right', next.settings.sound));
   toggle('문제 자동으로 읽어 주기', 'speech', (next) => speak('3 + 4 = ?', next.settings.speech));
+  view.appendChild(card);
 
   const totalStars = Object.values(state.stars).reduce((a, b) => a + b, 0);
-  const stat = section('📊 나의 기록');
-  stat.appendChild(el('p', 'section-sub', `게임과 레슨 ${state.plays}번 · 모은 별 ${totalStars}개 · 스티커 ${state.stickers.length}개`));
+  const stats = el('div', 'stat-grid');
+  for (const [label, value] of [['플레이', state.plays], ['모은 별', totalStars], ['컬렉션', state.stickers.length]]) {
+    const c = el('div', 'stat');
+    c.append(el('span', 'stat-value', String(value)), el('span', 'stat-label', label));
+    stats.appendChild(c);
+  }
+  const ss = section('나의 기록');
+  ss.appendChild(stats);
+  view.appendChild(ss);
 
-  const danger = section('🧹 처음부터 다시');
-  danger.appendChild(button('choice danger', '모든 기록 지우기', () => {
-    if (!globalThis.confirm('코인, 별, 스티커, 레슨 기록이 모두 지워져요. 지울까요?')) return;
+  const reset = button('btn btn-danger', undefined, () => {
+    if (!globalThis.confirm('코인, 별, 컬렉션, 레슨 기록이 모두 지워져요. 지울까요?')) return;
     resetAll();
     render();
-  }));
+  });
+  reset.append(icon('trash', 18), el('span', null, '모든 기록 지우기'));
+  view.appendChild(reset);
+}
 
-  view.append(s, stat, danger);
+function mountTabs() {
+  const nav = document.getElementById('tabs');
+  TABS.forEach((t) => {
+    const a = link('tab', undefined, `#${t.view}`);
+    a.dataset.view = t.view;
+    a.append(icon(t.icon, 22), el('span', null, t.label));
+    nav.appendChild(a);
+  });
 }
 
 function currentView() {
@@ -246,5 +358,7 @@ async function render() {
   await VIEWS[name](state, box);
 }
 
-window.addEventListener('hashchange', render);
+mountChrome();
+mountTabs();
+window.addEventListener('hashchange', () => { window.scrollTo(0, 0); render(); });
 render();
