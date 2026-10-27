@@ -1,0 +1,78 @@
+{
+  "id": "count-groups",
+  "grade": 1,
+  "area": "수와 연산",
+  "title": "묶어서 세기",
+  "principle": "10개씩 묶으면 묶음의 수와 남은 낱개로 큰 수를 쉽게 셀 수 있다.",
+  "scenes": [
+    {
+      "id": "scene-1",
+      "image": "assets/count-groups/scene-1.svg",
+      "dialogue": "구슬이 여기저기 흩어져 있네! 하나씩 세다가 자꾸 놓칠 것 같아.",
+      "question": "구슬을 쉽게 세려면 어떻게 하면 좋을까?",
+      "choices": ["하나씩 계속 센다", "같은 수끼리 묶어서 센다", "눈을 감고 센다"],
+      "answer": 1
+    },
+    {
+      "id": "scene-2",
+      "image": "assets/count-groups/scene-2.svg",
+      "dialogue": "그럼 구슬을 10개씩 줄에 꿰어 볼게. 짜잔, 줄이 생겼어!",
+      "question": "구슬 줄은 모두 몇 줄일까?",
+      "choices": ["1줄", "2줄", "3줄"],
+      "answer": 1
+    },
+    {
+      "id": "scene-3",
+      "image": "assets/count-groups/scene-3.svg",
+      "dialogue": "줄에 꿰고 나니 줄에 못 낀 구슬이 따로 있어.",
+      "question": "줄에 못 낀 구슬은 몇 개일까?",
+      "choices": ["2개", "3개", "10개"],
+      "answer": 1
+    },
+    {
+      "id": "scene-4",
+      "image": "assets/count-groups/scene-4.svg",
+      "dialogue": "10개짜리 줄과 낱개 구슬을 함께 살펴보자.",
+      "question": "10개씩 묶으면 구슬은 모두 몇 개일까?",
+      "choices": ["5개", "13개", "23개"],
+      "answer": 2
+    }
+  ],
+  "practice": [
+    {
+      "id": "p-1",
+      "prompt": "10개씩 묶음 1개와 낱개 4개는 모두 몇 개일까요?",
+      "choices": ["5개", "14개", "41개"],
+      "answer": 1,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-2",
+      "prompt": "10개씩 묶음 2개와 낱개 5개는 모두 몇 개일까요?",
+      "choices": ["25개", "7개", "52개"],
+      "answer": 0,
+      "hintScene": "scene-4"
+    },
+    {
+      "id": "p-3",
+      "prompt": "10개씩 묶음 3개는 모두 몇 개일까요?",
+      "choices": ["3개", "13개", "30개"],
+      "answer": 2,
+      "hintScene": "scene-2"
+    },
+    {
+      "id": "p-4",
+      "prompt": "사탕이 10개씩 묶음 4개와 낱개 2개 있어요. 모두 몇 개일까요?",
+      "choices": ["24개", "42개", "6개"],
+      "answer": 1,
+      "hintScene": "scene-4"
+    },
+    {
+      "id": "p-5",
+      "prompt": "연필 36자루를 10개씩 묶으면 몇 묶음이고 낱개는 몇 자루일까요?",
+      "choices": ["6묶음, 낱개 3자루", "3묶음, 낱개 6자루", "3묶음, 낱개 0자루"],
+      "answer": 1,
+      "hintScene": "scene-3"
+    }
+  ]
+}
